@@ -124,6 +124,8 @@ IN: sequences.extras.tests
 
 { 1 } [ { 1 7 3 7 6 3 7 } arg-max ] unit-test
 { 0 } [ { 1 7 3 7 6 3 7 } arg-min ] unit-test
+{ { 0 4 } } [ { 5 3 2 10 5 } [ 5 = ] arg-where ] unit-test
+{ { 2 1 0 4 3 } } [ { 5 3 2 10 5 } arg-sort ] unit-test
 
 { t } [ { 1 2 3 4 5 } 1 first= ] unit-test
 { t } [ { 1 2 3 4 5 } 2 second= ] unit-test
@@ -149,3 +151,21 @@ IN: sequences.extras.tests
 
 { "" } [ { } "" reverse-as ] unit-test
 { "ABC" } [ { 67 66 65 } "" reverse-as ] unit-test
+
+{ V{ 1 } } [ 1 0 V{ } [ insert-nth! ] keep ] unit-test
+{ V{ 1 2 3 4 } } [ 2 1 V{ 1 3 4 } [ insert-nth! ] keep ] unit-test
+
+{ "abc" } [ B{ 97 98 99 100 101 102 103 } 3 "" head-as ] unit-test
+{ "abcd" } [ B{ 97 98 99 100 101 102 103 } 3 "" head*-as ] unit-test
+{ "defg" } [ B{ 97 98 99 100 101 102 103 } 3 "" tail-as ] unit-test
+{ "efg" } [ B{ 97 98 99 100 101 102 103 } 3 "" tail*-as ] unit-test
+
+{ { 1 0 0 1 0 0 0 1 0 0 } }
+[ 1 { 0 3 7 } 10 0 <array> [ set-nths ] keep ] unit-test
+
+{ { 1 0 0 1 0 0 0 1 0 0 } }
+[ 1 { 0 3 7 } 10 0 <array> [ set-nths-unsafe ] keep ] unit-test
+
+{ V{ 1 } } [ 1 flatten1 ] unit-test
+{ { 1 2 3 } } [ { 1 2 3 } flatten1 ] unit-test
+{ { 1 2 3 { { 4 } } } } [ { 1 { 2 } { 3 { { 4 } } } } flatten1 ] unit-test

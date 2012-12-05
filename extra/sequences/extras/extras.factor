@@ -1,6 +1,6 @@
-USING: accessors arrays assocs fry grouping kernel locals make
-math math.order math.ranges sequences sequences.private
-splitting ;
+USING: accessors arrays assocs fry grouping growable kernel
+locals make math math.order math.ranges sequences
+sequences.deep sequences.private sorting splitting ;
 FROM: sequences => change-nth ;
 IN: sequences.extras
 
@@ -230,6 +230,18 @@ PRIVATE>
 : contains? ( seq elts -- ? )
     [ member? ] curry any? ; inline
 
+: head-as ( seq n exemplar -- seq' )
+    [ head-slice ] [ like ] bi* ; inline
+
+: head*-as ( seq n exemplar -- seq' )
+    [ head-slice* ] [ like ] bi* ; inline
+
+: tail-as ( seq n exemplar -- seq' )
+    [ tail-slice ] [ like ] bi* ; inline
+
+: tail*-as ( seq n exemplar -- seq' )
+    [ tail-slice* ] [ like ] bi* ; inline
+
 : trim-as ( ... seq quot: ( ... elt -- ... ? ) exemplar -- ... newseq )
     [ trim-slice ] [ like ] bi* ; inline
 
@@ -307,6 +319,9 @@ INSTANCE: odds immutable-sequence
     [ dup length iota zip ] dip
     [ first-unsafe ] prepose filter values ; inline
 
+: arg-sort ( seq -- indices )
+    dup length iota zip sort-keys values ;
+
 : first= ( seq elt -- ? ) [ first ] dip = ; inline
 : second= ( seq elt -- ? ) [ second ] dip = ; inline
 : third= ( seq elt -- ? ) [ third ] dip = ; inline
@@ -339,3 +354,23 @@ PRIVATE>
 
 : map-product ( ... seq quot: ( ... elt -- ... n ) -- ... n )
     [ 1 ] 2dip [ dip * ] curry [ swap ] prepose each ; inline
+
+: insert-nth! ( elt n seq -- )
+    [ length ] keep ensure swap pick (a,b]
+    over '[ [ 1 + ] keep _ move-unsafe ] each
+    set-nth-unsafe ;
+
+: set-nths ( value indices seq -- )
+    swapd '[ [ _ ] dip _ set-nth ] each ; inline
+
+: set-nths-unsafe ( value indices seq -- )
+    swapd '[ [ _ ] dip _ set-nth-unsafe ] each ; inline
+
+: flatten1 ( obj -- seq )
+    [
+        [
+            dup branch? [
+                [ dup branch? [ % ] [ , ] if ] each
+            ] [ , ] if
+        ]
+    ] keep dup branch? [ drop f ] unless make ;
